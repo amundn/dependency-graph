@@ -1,5 +1,6 @@
 import networkx as nx
 import matplotlib.pyplot as plt
+from tabulate import tabulate
 
 def visualize_graph(solution_projects, project_dependencies):
     G = nx.DiGraph()
@@ -18,11 +19,10 @@ def visualize_graph(solution_projects, project_dependencies):
     edge_labels = {}
     color_list = []
     for project, solutions in project_dependencies.items():
-        for solution in solutions:
+        for solution, version in solutions:
             edge_color = solution_colors[solution]
             for other_solution, other_projects in solution_projects.items():
                 if project in other_projects:
-                    print(f"Creating edge from {solution} to {project}")
                     G.add_edge(solution, project, color=edge_color)
                     edge_list.append((solution, project))
                     color_list.append(edge_color)
@@ -60,3 +60,13 @@ def visualize_graph(solution_projects, project_dependencies):
 
     # Return the graph and edge labels for further processing
     return G, edge_labels
+
+def display_dependency_table(project_dependencies, project_versions):
+    table_data = []
+    for project, solutions in project_dependencies.items():
+        for solution, version in solutions:
+            table_data.append([project, solution, project_versions[project][solution]])
+
+    headers = ["Project name", "Solution Name", "Version"]
+    table = tabulate(table_data, headers, tablefmt="pretty")
+    print(table)

@@ -1,7 +1,7 @@
 import xml.etree.ElementTree as ET
 import os
 import re
-import json
+from collections import defaultdict
 
 def parse_packages_props(file_path):
     try:
@@ -10,8 +10,8 @@ def parse_packages_props(file_path):
         dependencies = []
         for package in root.findall(".//PackageVersion"):
             name = package.get('Include')
-            dependencies.append(name)
-        # print(f"Parsed dependencies from {file_path}: {dependencies}")
+            version = package.get('Version')
+            dependencies.append((name, version))
         return dependencies
     except Exception as e:
         print(f"Error parsing {file_path}: {e}")
@@ -54,7 +54,6 @@ def parse_assembly_name(csproj_file):
             break
         if not assembly_name:
             assembly_name = os.path.splitext(os.path.basename(csproj_file))[0]
-        # print(f"Parsed assembly name '{assembly_name}' from {csproj_file}")
         return assembly_name
     except Exception as e:
         print(f"Error parsing {csproj_file}: {e}")
@@ -73,9 +72,10 @@ def find_sln_files(base_directory):
 
 def build_dependency_graph(solutions):
     solution_projects = {}
-    project_dependencies = {}
+    project_dependencies = defaultdict(list)
     all_dependencies = set()
     project_assembly_names = {}
+    project_versions = defaultdict(dict)
 
     # First pass: Collect all projects from all solutions
     for solution in solutions:
@@ -101,18 +101,16 @@ def build_dependency_graph(solutions):
 
         if os.path.exists(props_path):
             dependencies = parse_packages_props(props_path)
-            all_dependencies.update(dependencies)
-            for dep in dependencies:
-                # print(f"Processing dependency '{dep}' for solution '{solution_name}'")
+            for dep, version in dependencies:
+                all_dependencies.add(dep)
+                project_versions[dep][solution_name] = version
                 if dep in project_assembly_names:
                     for other_solution, other_projects in solution_projects.items():
                         if other_solution != solution_name:
                             for project_name, project_path in other_projects:
                                 project_csproj_path = os.path.abspath(os.path.join(solution_dir, project_path))
                                 if project_csproj_path == project_assembly_names[dep]:
-                                    if dep not in project_dependencies:
-                                        project_dependencies[dep] = []
-                                    project_dependencies[dep].append(solution_name)
+                                    project_dependencies[dep].append((solution_name, version))
                                     # print(f"Added dependency: {solution_name} -> {dep}")
                                 # else:
                                 #     print(f"No match for {project_csproj_path} and {project_assembly_names[dep]}")
@@ -133,7 +131,7 @@ def build_dependency_graph(solutions):
     print("Filtered Solution Projects:", filtered_solution_projects)
     print("Filtered Project Dependencies:", project_dependencies)
 
-    return filtered_solution_projects, project_dependencies
+    return filtered_solution_projects, project_dependencies, project_versions
 
 def export_graph_to_json(solution_projects, project_dependencies):
     nodes = [{'id': proj, 'group': 'solution' if proj in solution_projects else 'project'} for proj in set(solution_projects.keys()).union(project_dependencies.keys())]
