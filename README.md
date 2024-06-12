@@ -1,4 +1,4 @@
-# dependency-graph, Solution and Project Dependency Visualizer
+# Solution and Project Dependency Visualizer
 
 This project is designed to visualize dependencies between solutions and assemblies generated from other solutions in a .NET environment. It processes solution files (`.sln`) and project files (`.csproj`) to build a dependency graph and generates a visualization of these dependencies. Additionally, it outputs a neatly formatted table showing each project, its dependent solutions, and the version used for each solution.
 
@@ -95,4 +95,3 @@ For any questions or comments, please reach out to the project maintainer.
 ---
 
 Happy Coding!
-```
