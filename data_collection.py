@@ -1,6 +1,7 @@
 import xml.etree.ElementTree as ET
 import os
 import re
+import json
 from collections import defaultdict
 
 def parse_packages_props(file_path):
@@ -67,8 +68,6 @@ def find_sln_files(base_directory):
                 sln_files.append(os.path.join(root, file))
     # print(f"Found solution files: {sln_files}")
     return sln_files
-
-# Build dependency graph code remains the same - ensure paths are properly constructed and checked before use
 
 def build_dependency_graph(solutions):
     solution_projects = {}
