@@ -1,4 +1,5 @@
 graph_data.json
 project_dependencies.json
 project_dependencies.svg
+dependency_table.txt
 *.pyc

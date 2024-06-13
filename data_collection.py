@@ -19,7 +19,7 @@ def parse_packages_props(file_path):
         return []
 
 def parse_sln(file_path):
-    project_pattern = re.compile(r'Project\("{.*}"\) = "(.*)", "(.*)", "{.*}"')
+    project_pattern = re.compile(r'Project\("{.*}"\) = "(.*)", "(.*csproj)", "{.*}"')
     projects = []
     try:
         with open(file_path, 'r') as file:
@@ -127,8 +127,8 @@ def build_dependency_graph(solutions):
 
     project_dependencies = {proj: sols for proj, sols in project_dependencies.items() if proj in all_dependencies}
 
-    print("Filtered Solution Projects:", filtered_solution_projects)
-    print("Filtered Project Dependencies:", project_dependencies)
+    # print("Filtered Solution Projects:", filtered_solution_projects)
+    # print("Filtered Project Dependencies:", project_dependencies)
 
     return filtered_solution_projects, project_dependencies, project_versions
 

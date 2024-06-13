@@ -61,7 +61,7 @@ def visualize_graph(solution_projects, project_dependencies):
     # Return the graph and edge labels for further processing
     return G, edge_labels
 
-def display_dependency_table(project_dependencies, project_versions):
+def display_dependency_table(project_dependencies, project_versions, output_file="dependency_table.txt"):
     table_data = []
     for project, solutions in project_dependencies.items():
         for solution, version in solutions:
@@ -69,4 +69,10 @@ def display_dependency_table(project_dependencies, project_versions):
 
     headers = ["Project name", "Solution Name", "Version"]
     table = tabulate(table_data, headers, tablefmt="pretty")
+    
+    # Print the table to console
     print(table)
+    
+    # Save the table to a text file
+    with open(output_file, 'w') as f:
+        f.write(table)
